@@ -1,46 +1,73 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { useDispatch, useSelector } from 'react-redux';
-import { pokeFetch } from '../../store/asyncActions/poke';
-import Loading from '../../UI/Loading';
-import { Grid } from '@mui/material';
-import MediaCard from '../CardGrid/CardGrid';
+import * as React from "react";
+import PropTypes from "prop-types";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import MailIcon from "@mui/icons-material/Mail";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../../UI/Loading";
+import { Grid } from "@mui/material";
+import MediaCard from "../CardGrid/CardGrid";
+import { filterCategories, pokeFetch, pokePush } from "../../store/reducers/poke.reducer";
+import axios from "../../api/axios.info";
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const {value,loading,pokes} = useSelector((state)=>state.poke)
+  const {pokesData ,categories} = useSelector((state) => state.poke);
+  
+  const [catPokes, setCatPokes] = React.useState(null);
   const isMounted = React.useRef(false);
 
-  React.useEffect(() => {
-    if (value && isMounted.current) {
-      
-      dispatch(pokeFetch(pokeFetch))
-      console.log("done");
-    } else {
-      isMounted.current = true;
+  
+
+  React.useEffect( () => {
+    
+    if(isMounted.current ){
+      const fetchData = async () => {
+
+        const data = await dispatch(pokeFetch()).unwrap()
+        data.results.forEach(item => {
+          dispatch(pokePush(item.url))
+        });
+        
+      }
+      fetchData().catch(console.error);
+
     }
-  }, []);
+   else {
+      isMounted.current = true;
+      // fetchData().catch(console.error);
+    }
+  }, [dispatch]);
+
+  if(pokesData.length>=897){
+    dispatch(filterCategories())
+  }
+  
+  
+  const showCategory=(text)=>{
+    
+  }
+   
+    
+  
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -49,39 +76,37 @@ function ResponsiveDrawer(props) {
   const drawer = (
     <div>
       <Toolbar />
+    
       <Divider />
       <List>
-
-      {
-          
-          <ListItem button id={null}   >
+        {
+          <ListItem button id={null}>
             <ListItemIcon>
-               <InboxIcon /> 
+              <InboxIcon />
             </ListItemIcon>
-            <ListItemText primary= "All" />
+            <ListItemText primary="All" />
           </ListItem>
         }
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        {categories && categories.map((text, index) => (
+          <ListItem key={text} onClick={()=>showCategory(text)} disablePadding>
             <ListItemButton>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={text.toUpperCase()} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
       <Divider />
-     
     </div>
   );
 
-  const container = window !== undefined ? () => window().document.body : undefined;
-  
- 
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -96,7 +121,7 @@ function ResponsiveDrawer(props) {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -120,8 +145,11 @@ function ResponsiveDrawer(props) {
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
           }}
         >
           {drawer}
@@ -129,8 +157,11 @@ function ResponsiveDrawer(props) {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
           }}
           open
         >
@@ -139,24 +170,25 @@ function ResponsiveDrawer(props) {
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
       >
         <Toolbar />
-        {
-          loading ? <Loading/>
-          :
-         
-          <Grid container spacing={2}>
-          {pokes.results.map((poke, index) => {
-            return (
-              <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                <MediaCard   {...poke} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        }
-        
+        {/* {
+          !pokes ? <Loading /> : null
+            <Grid container spacing={2}>
+            {pokes.results.map((poke, index) => {
+              return (
+                <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
+                  <MediaCard   {...poke} />
+                </Grid>
+              );
+            })}
+          </Grid>
+        } */}
       </Box>
     </Box>
   );
