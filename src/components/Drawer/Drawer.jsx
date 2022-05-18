@@ -20,7 +20,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../UI/Loading";
 import { Grid } from "@mui/material";
 import MediaCard from "../CardGrid/CardGrid";
-import { filterCategories, pokeFetch, pokePush } from "../../store/reducers/poke.reducer";
+import {
+  filterCategories,
+  pokeFetch,
+  pokePush,
+} from "../../store/reducers/poke.reducer";
 import axios from "../../api/axios.info";
 
 const drawerWidth = 240;
@@ -30,44 +34,56 @@ function ResponsiveDrawer(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const dispatch = useDispatch();
 
-  const {pokesData ,categories} = useSelector((state) => state.poke);
-  
+  const { pokesData, categories, limitReq } = useSelector(
+    (state) => state.poke
+  );
+
   const [catPokes, setCatPokes] = React.useState(null);
+  const categoryData = React.useRef(null);
+
   const isMounted = React.useRef(false);
+  const [render, setRender] = React.useState(false);
 
-  
-
-  React.useEffect( () => {
-    
-    if(isMounted.current ){
+  React.useEffect(() => {
+    if (isMounted.current) {
       const fetchData = async () => {
-
-        const data = await dispatch(pokeFetch()).unwrap()
-        data.results.forEach(item => {
-          dispatch(pokePush(item.url))
+        const data = await dispatch(pokeFetch()).unwrap();
+        data.results.forEach((item) => {
+          dispatch(pokePush(item.url));
         });
-        
-      }
+      };
       fetchData().catch(console.error);
-
-    }
-   else {
+    } else {
       isMounted.current = true;
       // fetchData().catch(console.error);
     }
   }, [dispatch]);
 
-  if(pokesData.length>=897){
-    dispatch(filterCategories())
+  if (pokesData.length >= limitReq) {
+    dispatch(filterCategories());
   }
-  
-  
-  const showCategory=(text)=>{
-    
-  }
-   
-    
-  
+
+  const showCategory = (text) => {
+    console.log(pokesData);
+    let filtered = []
+     pokesData.forEach((item) => {
+
+      let mapped = item.types.map((item) => {
+        if (item.type.name === text) {
+          return true;
+        }
+        return false
+        
+      });
+      console.log(mapped);
+      if(mapped.includes(true)){
+        filtered.push(item)
+      }
+      
+    });
+    console.log(filtered);
+    setCatPokes(text);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -76,7 +92,7 @@ function ResponsiveDrawer(props) {
   const drawer = (
     <div>
       <Toolbar />
-    
+      <button onClick={() => setRender(!render)}> sdasdasdas</button>
       <Divider />
       <List>
         {
@@ -87,16 +103,21 @@ function ResponsiveDrawer(props) {
             <ListItemText primary="All" />
           </ListItem>
         }
-        {categories && categories.map((text, index) => (
-          <ListItem key={text} onClick={()=>showCategory(text)} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text.toUpperCase()} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {categories &&
+          categories.map((text, index) => (
+            <ListItem
+              key={text}
+              onClick={() => showCategory(text)}
+              disablePadding
+            >
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text.toUpperCase()} />
+              </ListItemButton>
+            </ListItem>
+          ))}
       </List>
       <Divider />
     </div>

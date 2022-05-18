@@ -4,13 +4,14 @@ import axios from "../../api/axios.info";
 
 export const pokeFetch = createAsyncThunk(
   "poke/get",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue,getState }) => {
     try {
-      const res = await axios.get(`/pokemon-form/?offset=0&limit=898`);
+      let limit = getState().poke.limitReq
+      const res = await axios.get(`/pokemon-form/?offset=0&limit=${limit}`);
       if (!res?.data) {
         throw new Error();
       }
-      // console.log(res.data );
+
       return res.data;
     } catch (error) {
       return rejectWithValue(error.res.data);
@@ -36,7 +37,7 @@ export const pokePush = createAsyncThunk(
 export const pokeSlice = createSlice({
   name: "poke",
   initialState: {
-    value: "asdas",
+    limitReq: 5,
     loading: null,
     pokes: null,
     pokesData: [],
