@@ -64,25 +64,18 @@ function ResponsiveDrawer(props) {
   }
 
   const showCategory = (text) => {
-    console.log(pokesData);
-    let filtered = []
-     pokesData.forEach((item) => {
+    let filtered = [];
+    pokesData.forEach((item) => {
+      let some = item.types.some(
+        (item) => item.type.name === text,
+      );
 
-      let mapped = item.types.map((item) => {
-        if (item.type.name === text) {
-          return true;
-        }
-        return false
-        
-      });
-      console.log(mapped);
-      if(mapped.includes(true)){
-        filtered.push(item)
+      if (some) {
+        filtered.push(item);
       }
-      
     });
-    console.log(filtered);
-    setCatPokes(text);
+
+    setCatPokes(filtered);
   };
 
   const handleDrawerToggle = () => {
@@ -114,7 +107,7 @@ function ResponsiveDrawer(props) {
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text.toUpperCase()} />
+                <ListItemText primary={text.charAt(0).toUpperCase() + text.slice(1)} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -210,6 +203,19 @@ function ResponsiveDrawer(props) {
             })}
           </Grid>
         } */}
+        {catPokes ? (
+          <Grid container spacing={2}>
+            {catPokes.map((poke, index) => {
+              return (
+                <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
+                  <MediaCard {...poke} />
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Loading />
+        )}
       </Box>
     </Box>
   );

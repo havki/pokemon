@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../api/axios.info";
 
-export default function MediaCard({ name, url }) {
+export default function MediaCard({name ,sprites }) {
   
   
   const dispatch = useDispatch();
@@ -17,30 +17,29 @@ export default function MediaCard({ name, url }) {
 
   const [poke, setPoke] = React.useState(null);
 
-  React.useEffect(() => {
-    if (!poke && isMounted.current) {
-      const fetchData = async () => {
-        const response = await axios.get(url);
-        const res = response.data;
-        setPoke((poke) => res);
-      };
-      fetchData().catch(console.error);
-    } else {
-      isMounted.current = true;
-    }
-  }, []);
+  // React.useEffect(() => {
+  //   if (!poke && isMounted.current) {
+  //     const fetchData = async () => {
+  //       const response = await axios.get(url);
+  //       const res = response.data;
+  //       setPoke((poke) => res);
+  //     };
+  //     fetchData().catch(console.error);
+  //   } else {
+  //     isMounted.current = true;
+  //   }
+  // }, []);
 
   const LearnMore = () => {};
-
   return (
     <Card sx={{ maxWidth: 345, m: "0 auto" }}>
-      {poke && (
+      {sprites && (
         <CardMedia
           component="img"
           height="140"
           image={
-            poke
-              ? `${poke.sprites.front_default}`
+            sprites
+              ? `${sprites.front_default}`
               : "https://xn--90aha1bhcc.xn--p1ai/img/placeholder.png"
           }
           alt="green iguana"
@@ -49,7 +48,7 @@ export default function MediaCard({ name, url }) {
 
       <CardContent>
         <Typography gutterBottom variant="h8" component="div">
-          {name}
+          {name.charAt(0).toUpperCase() + name.slice(1)}
         </Typography>
       </CardContent>
 
