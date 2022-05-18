@@ -8,21 +8,22 @@ import {store} from "./store/index";
 import { ThemeProvider,createTheme  } from "@mui/material";
 
 const theme = createTheme({
-  mode: 'dark',
+  
   palette: {
-    primary: {
-      light: "#757ce8",
-      main: "#847AFF",
-      dark: "#002884",
-      contrastText: "#fff",
-    },
-    secondary: {
-      light: "#ff7961",
-      main: "#f44336",
-      dark: "#ba000d",
-      contrastText: "#000",
-    },
-  },
+    mode: 'dark',
+     primary: {
+       light: '#757ce8',
+       main: '#3f50b5',
+       dark: '#002884',
+       contrastText: '#fff',
+     },
+     secondary: {
+       light: '#ff7961',
+       main: '#f44336',
+       dark: '#ba000d',
+       contrastText: '#000',
+     },
+   },
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

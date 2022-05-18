@@ -18,7 +18,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../UI/Loading";
-import { Grid } from "@mui/material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Grid,
+  Pagination,
+  Paper,
+  Stack,
+} from "@mui/material";
 import MediaCard from "../CardGrid/CardGrid";
 import {
   filterCategories,
@@ -26,12 +33,14 @@ import {
   pokePush,
 } from "../../store/reducers/poke.reducer";
 import axios from "../../api/axios.info";
+import { display } from "@mui/system";
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  // const [page, setPage] = React.useState(1);
   const dispatch = useDispatch();
 
   const { pokesData, categories, limitReq } = useSelector(
@@ -39,10 +48,9 @@ function ResponsiveDrawer(props) {
   );
 
   const [catPokes, setCatPokes] = React.useState(null);
-  const categoryData = React.useRef(null);
 
   const isMounted = React.useRef(false);
-  const [render, setRender] = React.useState(false);
+  const [all, setAll] = React.useState(false);
 
   React.useEffect(() => {
     if (isMounted.current) {
@@ -55,7 +63,6 @@ function ResponsiveDrawer(props) {
       fetchData().catch(console.error);
     } else {
       isMounted.current = true;
-      // fetchData().catch(console.error);
     }
   }, [dispatch]);
 
@@ -64,11 +71,10 @@ function ResponsiveDrawer(props) {
   }
 
   const showCategory = (text) => {
+    
     let filtered = [];
     pokesData.forEach((item) => {
-      let some = item.types.some(
-        (item) => item.type.name === text,
-      );
+      let some = item.types.some((item) => item.type.name === text);
 
       if (some) {
         filtered.push(item);
@@ -76,6 +82,29 @@ function ResponsiveDrawer(props) {
     });
 
     setCatPokes(filtered);
+    setAll(false);
+  };
+
+  const showAll = () => {
+    setAll(true);
+    setCatPokes(null);
+  };
+
+  const paginHandler = (e, value) => {
+    console.log(value);
+    // setPage(value)
+    let arrp = [0,3]
+
+    
+
+
+    let shorted = []
+    catPokes.forEach((item,index)=> {
+      if(index>=arrp[0] && index<arrp[1] ){
+        shorted.push(item)
+      }
+    })
+    console.log(shorted);
   };
 
   const handleDrawerToggle = () => {
@@ -85,11 +114,10 @@ function ResponsiveDrawer(props) {
   const drawer = (
     <div>
       <Toolbar />
-      <button onClick={() => setRender(!render)}> sdasdasdas</button>
       <Divider />
       <List>
         {
-          <ListItem button id={null}>
+          <ListItem button onClick={() => showAll()} id={null}>
             <ListItemIcon>
               <InboxIcon />
             </ListItemIcon>
@@ -107,7 +135,9 @@ function ResponsiveDrawer(props) {
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text.charAt(0).toUpperCase() + text.slice(1)} />
+                <ListItemText
+                  primary={text.charAt(0).toUpperCase() + text.slice(1)}
+                />
               </ListItemButton>
             </ListItem>
           ))}
@@ -182,6 +212,7 @@ function ResponsiveDrawer(props) {
           {drawer}
         </Drawer>
       </Box>
+      <Stack direction="column"></Stack>
       <Box
         component="main"
         sx={{
@@ -191,32 +222,55 @@ function ResponsiveDrawer(props) {
         }}
       >
         <Toolbar />
-        {/* {
-          !pokes ? <Loading /> : null
-            <Grid container spacing={2}>
-            {pokes.results.map((poke, index) => {
-              return (
-                <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                  <MediaCard   {...poke} />
-                </Grid>
-              );
-            })}
-          </Grid>
-        } */}
-        {catPokes ? (
-          <Grid container spacing={2}>
-            {catPokes.map((poke, index) => {
-              return (
-                <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                  <MediaCard {...poke} />
-                </Grid>
-              );
-            })}
-          </Grid>
+        {catPokes || all ? (
+          <>
+            {all && (
+              <Grid container spacing={2}>
+                {pokesData.map((poke, index) => {
+                  return (
+                    <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
+                      <MediaCard {...poke} />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            )}
+            {catPokes && (
+              <Grid container spacing={2}>
+                {catPokes.map((poke, index) => {
+                  return (
+                    <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
+                      <MediaCard {...poke} />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            )}
+          </>
         ) : (
           <Loading />
         )}
       </Box>
+      <Paper
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+        }}
+        elevation={3}
+      >
+        <Pagination
+          count={10}
+          color="secondary"
+          size="large"
+          // page= {page}
+          onChange={paginHandler}
+          sx={{ margin: "20px 0 20px 100px" }}
+        />
+      </Paper>
     </Box>
   );
 }
