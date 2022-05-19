@@ -40,7 +40,7 @@ const drawerWidth = 240;
 function ResponsiveDrawer(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  // const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState(1);
   const dispatch = useDispatch();
 
   const { pokesData, categories, limitReq } = useSelector(
@@ -50,7 +50,6 @@ function ResponsiveDrawer(props) {
   const [catPokes, setCatPokes] = React.useState(null);
 
   const isMounted = React.useRef(false);
-  const [all, setAll] = React.useState(false);
 
   React.useEffect(() => {
     if (isMounted.current) {
@@ -71,24 +70,27 @@ function ResponsiveDrawer(props) {
   }
 
   const showCategory = (text) => {
+    console.log(text);
+    if(text==='all'){
+      setCatPokes(pokesData)
+    }
+    else{
+
+      let filtered = [];
+      pokesData.forEach((item,index) => {
+        let some = item.types.some((item) => item.type.name === text);
+  
+        if (some) {
+          filtered.push(item);
+        }
+      });
+  
+      setCatPokes(filtered);
+    }
     
-    let filtered = [];
-    pokesData.forEach((item) => {
-      let some = item.types.some((item) => item.type.name === text);
-
-      if (some) {
-        filtered.push(item);
-      }
-    });
-
-    setCatPokes(filtered);
-    setAll(false);
   };
 
-  const showAll = () => {
-    setAll(true);
-    setCatPokes(null);
-  };
+  
 
   const paginHandler = (e, value) => {
     console.log(value);
@@ -104,7 +106,7 @@ function ResponsiveDrawer(props) {
         shorted.push(item)
       }
     })
-    console.log(shorted);
+    setCatPokes(shorted)
   };
 
   const handleDrawerToggle = () => {
@@ -117,7 +119,7 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {
-          <ListItem button onClick={() => showAll()} id={null}>
+          <ListItem button onClick={() => showCategory("all")} id={null}>
             <ListItemIcon>
               <InboxIcon />
             </ListItemIcon>
@@ -222,34 +224,21 @@ function ResponsiveDrawer(props) {
         }}
       >
         <Toolbar />
-        {catPokes || all ? (
-          <>
-            {all && (
-              <Grid container spacing={2}>
-                {pokesData.map((poke, index) => {
-                  return (
-                    <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                      <MediaCard {...poke} />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            )}
-            {catPokes && (
-              <Grid container spacing={2}>
-                {catPokes.map((poke, index) => {
-                  return (
-                    <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                      <MediaCard {...poke} />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            )}
-          </>
-        ) : (
-          <Loading />
-        )}
+        {catPokes ? (
+          <Grid container spacing={2}>
+            {catPokes.map((poke, index) => {
+              return (
+                <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
+                  <MediaCard {...poke} />
+                </Grid>
+              );
+            })}
+          </Grid>
+        )
+      :
+      (<Loading/>)
+      }
+        
       </Box>
       <Paper
         sx={{
@@ -266,7 +255,7 @@ function ResponsiveDrawer(props) {
           count={10}
           color="secondary"
           size="large"
-          // page= {page}
+          page= {page}
           onChange={paginHandler}
           sx={{ margin: "20px 0 20px 100px" }}
         />
