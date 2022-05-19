@@ -7,9 +7,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "../../api/axios.info";
 
-export default function MediaCard({name ,sprites }) {
+export default function MediaCard({name,sprites,learnMore,pokemon,all }) {
   
   
   const dispatch = useDispatch();
@@ -30,7 +29,8 @@ export default function MediaCard({name ,sprites }) {
   //   }
   // }, []);
 
-  const LearnMore = () => {};
+  
+  
   return (
     <Card sx={{ maxWidth: 345, m: "0 auto" }}>
       {sprites && (
@@ -53,7 +53,7 @@ export default function MediaCard({name ,sprites }) {
       </CardContent>
 
       <CardActions sx={{ display: "flex", justifyContent: "center" }}>
-        <Button onClick={LearnMore} size="small">
+        <Button onClick={()=>learnMore(pokemon)} size="small">
           Learn More
         </Button>
       </CardActions>

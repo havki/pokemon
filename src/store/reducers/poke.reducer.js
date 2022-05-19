@@ -37,7 +37,7 @@ export const pokePush = createAsyncThunk(
 export const pokeSlice = createSlice({
   name: "poke",
   initialState: {
-    limitReq: 50,
+    limitReq: 100,
     loading: null,
     pokes: null,
     pokesData: [],

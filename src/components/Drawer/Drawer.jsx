@@ -19,8 +19,7 @@ import Typography from "@mui/material/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../UI/Loading";
 import {
-  BottomNavigation,
-  BottomNavigationAction,
+ 
   Grid,
   Pagination,
   Paper,
@@ -32,24 +31,31 @@ import {
   pokeFetch,
   pokePush,
 } from "../../store/reducers/poke.reducer";
-import axios from "../../api/axios.info";
-import { display } from "@mui/system";
+import PokeCard from "../PokeCard/PokeCard";
+
+
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [page, setPage] = React.useState(1);
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
   const { pokesData, categories, limitReq } = useSelector(
     (state) => state.poke
   );
 
   const [catPokes, setCatPokes] = React.useState(null);
+  const [show, setShow] = React.useState(false)
+  const [pokemon, setPokemon] = React.useState(null)
+
+  // const [page, setPage] = React.useState(1);
 
   const isMounted = React.useRef(false);
+  const filteredGlobal = React.useRef(null);
+
+  // const pokesPerPage = [page * 10 - 10, page * 10];
 
   React.useEffect(() => {
     if (isMounted.current) {
@@ -69,45 +75,73 @@ function ResponsiveDrawer(props) {
     dispatch(filterCategories());
   }
 
+  const pageDivider = (iterabaleArr,conditionArr) =>{
+    let shorted = [];
+    iterabaleArr.forEach((item, index) => {
+      if (index >= conditionArr[0] && index < conditionArr[1]) {
+        shorted.push(item);
+      }
+    });
+    setCatPokes(shorted);
+  }
+
   const showCategory = (text) => {
     console.log(text);
-    if(text==='all'){
-      setCatPokes(pokesData)
-    }
-    else{
+    const pokesPerPage = [1 * 10 - 10, 1 * 10];
+    if (text === "all") {
+      // pageDivider(pokesData,pokesPerPage)
 
+      let shorted = [];
+      pokesData.forEach((item, index) => {
+        if (index >= pokesPerPage[0] && index < pokesPerPage[1]) {
+          shorted.push(item);
+        }
+      });
+      setCatPokes(shorted);
+      
+     
+
+    } else {
       let filtered = [];
-      pokesData.forEach((item,index) => {
+      pokesData.forEach((item) => {
         let some = item.types.some((item) => item.type.name === text);
-  
+
         if (some) {
           filtered.push(item);
         }
       });
-  
-      setCatPokes(filtered);
-    }
-    
-  };
+      filteredGlobal.current = filtered;
 
-  
+
+      let shorted = [];
+      filtered.forEach((item, index) => {
+        if (index >= pokesPerPage[0] && index < pokesPerPage[1]) {
+          shorted.push(item);
+        }
+      });
+      setCatPokes(shorted);
+    }
+  };
 
   const paginHandler = (e, value) => {
     console.log(value);
-    // setPage(value)
-    let arrp = [0,3]
+    const pokesPerPage = [value * 10 - 10, value * 10];
+    // setPage(value);
 
-    
-
-
-    let shorted = []
-    catPokes.forEach((item,index)=> {
-      if(index>=arrp[0] && index<arrp[1] ){
-        shorted.push(item)
+    let filtered = filteredGlobal.current;
+    let shorted = [];
+    filtered.forEach((item, index) => {
+      if (index >= pokesPerPage[0] && index < pokesPerPage[1]) {
+        shorted.push(item);
       }
-    })
-    setCatPokes(shorted)
+    });
+    setCatPokes(shorted);
   };
+
+  const pokeShow = (pokemon) =>{
+    setShow(true)
+    setPokemon(pokemon);
+  } 
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -153,6 +187,11 @@ function ResponsiveDrawer(props) {
 
   return (
     <Box sx={{ display: "flex" }}>
+      {
+        show && 
+
+      <PokeCard pokemonUrl={pokemon}  close={setShow}/>
+      }
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -214,7 +253,6 @@ function ResponsiveDrawer(props) {
           {drawer}
         </Drawer>
       </Box>
-      <Stack direction="column"></Stack>
       <Box
         component="main"
         sx={{
@@ -229,16 +267,14 @@ function ResponsiveDrawer(props) {
             {catPokes.map((poke, index) => {
               return (
                 <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                  <MediaCard {...poke} />
+                  <MediaCard learnMore={pokeShow} all={poke} {...poke}  />
                 </Grid>
               );
             })}
           </Grid>
-        )
-      :
-      (<Loading/>)
-      }
-        
+        ) : (
+          <Loading />
+        )}
       </Box>
       <Paper
         sx={{
@@ -255,7 +291,7 @@ function ResponsiveDrawer(props) {
           count={10}
           color="secondary"
           size="large"
-          page= {page}
+          // page={page}
           onChange={paginHandler}
           sx={{ margin: "20px 0 20px 100px" }}
         />
