@@ -32,6 +32,8 @@ import {
   pokePush,
 } from "../../store/reducers/poke.reducer";
 import PokeCard from "../PokeCard/PokeCard";
+import { Search } from "@mui/icons-material";
+import SearchAppBar from "../Search/Search";
 
 
 
@@ -210,9 +212,10 @@ function ResponsiveDrawer(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div"  sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
             Responsive drawer
           </Typography>
+         <SearchAppBar/>
         </Toolbar>
       </AppBar>
       <Box
