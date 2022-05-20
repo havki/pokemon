@@ -215,7 +215,7 @@ function ResponsiveDrawer(props) {
           <Typography variant="h6" noWrap component="div"  sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
             Responsive drawer
           </Typography>
-         <SearchAppBar/>
+         <SearchAppBar show= {pokeShow}/>
         </Toolbar>
       </AppBar>
       <Box

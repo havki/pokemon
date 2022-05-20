@@ -24,7 +24,7 @@ const style = {
 function PokeCard({ close, pokemonUrl }) {
   const [pokeInfo, setPokeInfo] = React.useState(null);
 
-  console.log(pokemonUrl);
+  
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -39,7 +39,7 @@ function PokeCard({ close, pokemonUrl }) {
     
   }
 
-  console.log(pokeInfo);
+  
   if (!pokeInfo) {
     return <Loading />;
   }

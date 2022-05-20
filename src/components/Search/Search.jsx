@@ -3,16 +3,23 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useSelector } from 'react-redux';
 
-export default function ComboBox() {
+export default function ComboBox({show}) {
   const [value, setValue] = React.useState('')
   const [open,setOpen] = React.useState(false)
+  const [textValue,setTextValue] = React.useState('')
+
   const {pokesData,pokes} = useSelector((state)=>state.poke)
   
   
   
-  if(value ){
-    console.log(value);
   
+  if(value ){
+   show( {
+    name: "charizard",
+  url: "https://pokeapi.co/api/v2/pokemon/6/"
+  },)
+  setValue('')
+
   }
 
   if(!pokes){
@@ -22,13 +29,16 @@ export default function ComboBox() {
     <Autocomplete
       disablePortal
       id="combo-box-demo"
+      freeSolo
       // inputValue={value}
       options={pokes.results.map((option) => option.name)}
       open = {open}
       sx={{ width: '50%' }}
       onInputChange={(event, newInputValue) => {
-        
-         setOpen(true)
+        setTimeout(() => {
+          
+          setOpen(true)
+        }, 2000);
         
       }}
       onChange={(event, newValue) => {
@@ -37,7 +47,7 @@ export default function ComboBox() {
         
         
       }}
-      renderInput={(params) => <TextField {...params} label="Movie" />}
+      renderInput={(params) => <TextField onChange={(e)=>(setTextValue(e.target.value))} {...params} label="Movie" />}
     />
   );
 }
