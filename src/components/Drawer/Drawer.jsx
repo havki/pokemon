@@ -34,6 +34,7 @@ import {
 import PokeCard from "../PokeCard/PokeCard";
 import { Search } from "@mui/icons-material";
 import SearchAppBar from "../Search/Search";
+import DebouncedSearch from "../DebouncedSearch/DebouncedSearch";
 
 
 
@@ -215,7 +216,7 @@ function ResponsiveDrawer(props) {
           <Typography variant="h6" noWrap component="div"  sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
             Responsive drawer
           </Typography>
-         <SearchAppBar show= {pokeShow}/>
+         <DebouncedSearch show= {pokeShow}/>
         </Toolbar>
       </AppBar>
       <Box
