@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { CardContent, CardMedia } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import axios from "../../api/axios.info";
 import Loading from "../../UI/Loading";
 
@@ -21,25 +20,23 @@ const style = {
   zIndex: 9999,
 };
 
-function PokeCard({ close, pokemonUrl }) {
+function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
   const [pokeInfo, setPokeInfo] = React.useState(null);
-
-  
 
   React.useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(pokemonUrl.url);
       const res = response.data;
-      setPokeInfo(res);
+
+      !newPictureReqProof[1] && setPokeInfo(res);
+      if (newPictureReqProof[1]) {
+        const megaResponse = await axios.get(res.pokemon.url);
+        setPokeInfo(megaResponse.data);
+      }
     };
     fetchData().catch(console.error);
   }, []);
 
-  if (pokeInfo) {
-    
-  }
-
-  
   if (!pokeInfo) {
     return <Loading />;
   }
@@ -76,7 +73,7 @@ function PokeCard({ close, pokemonUrl }) {
             );
           })}
 
-          <Button size="small" onClick={() => close(false)}>
+          <Button size="small" onClick={() => close([false, false])}>
             OK
           </Button>
         </Box>

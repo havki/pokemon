@@ -1,13 +1,9 @@
-
-
 import ResponsiveDrawer from "./components/Drawer/Drawer";
-
-
 
 function App() {
   return (
     <div className="App">
-      <ResponsiveDrawer/>
+      <ResponsiveDrawer />
     </div>
   );
 }

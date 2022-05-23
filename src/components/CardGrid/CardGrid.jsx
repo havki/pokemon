@@ -5,41 +5,29 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import axios from "../../api/axios.info";
 
-export default function MediaCard({name,sprites,learnMore,pokemon,all }) {
-  
-  
-  const dispatch = useDispatch();
-  const isMounted = React.useRef(false);
-
+export default function MediaCard({ name, sprites, learnMore, pokemon, all }) {
   const [poke, setPoke] = React.useState(null);
 
-  // React.useEffect(() => {
-  //   if (!poke && isMounted.current) {
-  //     const fetchData = async () => {
-  //       const response = await axios.get(url);
-  //       const res = response.data;
-  //       setPoke((poke) => res);
-  //     };
-  //     fetchData().catch(console.error);
-  //   } else {
-  //     isMounted.current = true;
-  //   }
-  // }, []);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(pokemon.url);
+      const res = response.data;
+      setPoke((poke) => res);
+    };
+    fetchData().catch(console.error);
+  }, [poke]);
 
-  
-  
   return (
     <Card sx={{ maxWidth: 345, m: "0 auto" }}>
-      {sprites && (
+      {poke && (
         <CardMedia
           component="img"
           height="140"
           image={
-            sprites
-              ? `${sprites.front_default}`
+            poke
+              ? `${poke.sprites.other.home.front_default}`
               : "https://xn--90aha1bhcc.xn--p1ai/img/placeholder.png"
           }
           alt="green iguana"
@@ -53,7 +41,7 @@ export default function MediaCard({name,sprites,learnMore,pokemon,all }) {
       </CardContent>
 
       <CardActions sx={{ display: "flex", justifyContent: "center" }}>
-        <Button onClick={()=>learnMore(pokemon)} size="small">
+        <Button onClick={() => learnMore(pokemon, false)} size="small">
           Learn More
         </Button>
       </CardActions>

@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../api/axios.info";
+import { initialState } from "./state";
 
 export const pokeFetch = createAsyncThunk(
   "poke/get",
-  async (_, { rejectWithValue,getState }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      let limit = getState().poke.limitReq
+      let limit = getState().poke.limitReq;
       const res = await axios.get(`/pokemon-form/?offset=0&limit=${limit}`);
       if (!res?.data) {
         throw new Error();
@@ -36,30 +37,17 @@ export const pokePush = createAsyncThunk(
 
 export const pokeSlice = createSlice({
   name: "poke",
-  initialState: {
-    limitReq: 100,
-    loading: null,
-    pokes: null,
-    pokesData: [],
-    categories: [],
-  },
+  initialState,
   reducers: {
     doSome: (state, action) => {},
     filterCategories: (state, action) => {
-      
-      
-      let full = []
+      let full = [];
       for (let i = 0; i < state.pokesData.length; i++) {
         const element = state.pokesData[i];
-       let each =element.types.map(i=>  i.type.name)
-       full.push(each);
-       
-
-       
-       
-        
+        let each = element.types.map((i) => i.type.name);
+        full.push(each);
       }
-      
+
       const flatted = full.flat();
       for (let item of flatted) {
         if (!state.categories.includes(item)) {
@@ -84,9 +72,7 @@ export const pokeSlice = createSlice({
       state.loading = true;
     },
     [pokePush.fulfilled]: (state, action) => {
-      // console.log(action.payload);
       state.pokesData.push(action.payload);
-
       state.loading = false;
     },
     [pokePush.rejected]: (state) => {
@@ -97,49 +83,3 @@ export const pokeSlice = createSlice({
 
 export const { doSome, filterCategories } = pokeSlice.actions;
 
-
-// let arr = [
-//   {
-//     types: [
-//       {
-//         type: {
-//           name: "grass",
-//         },
-//       },
-//       {
-//         type: {
-//           name: "poison",
-//         },
-//       },
-//     ],
-//   },
-//   {
-//     types: [
-//       {
-//         type: {
-//           name: "water",
-//         },
-//       },
-//       {
-//         type: {
-//           name: "gro",
-//         },
-//       },
-//     ],
-//   },
-//   {
-//     types: [
-//       {
-//         type: {
-//           name: "sand",
-//         },
-//       },
-//       {
-//         slot: 2,
-//         type: {
-//           name: "fire",
-//         },
-//       },
-//     ],
-//   },
-// ];
