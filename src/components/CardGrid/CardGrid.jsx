@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import axios from "../../api/axios.info";
 
-export default function MediaCard({ name, sprites, learnMore, pokemon, all }) {
+export default function MediaCard({ name, sprites, learnMore, pokemon, }) {
   const [poke, setPoke] = React.useState(null);
 
   React.useEffect(() => {
@@ -24,7 +24,7 @@ export default function MediaCard({ name, sprites, learnMore, pokemon, all }) {
       {poke && (
         <CardMedia
           component="img"
-          height="140"
+          height="200"
           image={
             poke
               ? `${poke.sprites.other.home.front_default}`

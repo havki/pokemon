@@ -41,11 +41,11 @@ function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
     return <Loading />;
   }
 
+
   return (
     <div>
       <Modal
         open={true}
-        // onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -73,7 +73,7 @@ function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
             );
           })}
 
-          <Button size="small" onClick={() => close([false, false])}>
+          <Button size="small" onClick={() => close()}>
             OK
           </Button>
         </Box>

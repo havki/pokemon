@@ -1,5 +1,5 @@
 export const initialState = {
-  limitReq: 100,
+  limitReq: 898,
   loading: null,
   pokes: null,
   pokesData: [],

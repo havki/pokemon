@@ -23,6 +23,7 @@ function Categories({show,categories}) {
           <ListItem
             key={text}
             onClick={() => show(text)}
+            category={text}
             disablePadding
           >
             <ListItemButton>

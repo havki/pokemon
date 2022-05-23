@@ -33,15 +33,15 @@ function ResponsiveDrawer(props) {
   );
 
   const [catPokes, setCatPokes] = React.useState(null); //категории
-  const [show, setShow] = React.useState([false,false]); //модалка
+  const [show, setShow] = React.useState([false, false]); //модалка
   const [pokemon, setPokemon] = React.useState(null); //пок в модалке
+  const [clear,setClear ] = React.useState(false)
 
   const [page, setPage] = React.useState(1); // пагинация
 
   const isMounted = React.useRef(false);
-  const filteredGlobal = React.useRef(null);
-
-  // const pokesPerPage = [page * 10 - 10, page * 10];
+  const filteredGlobal = React.useRef(null); // поки для категорий все и All
+  const pokesPage = React.useRef(10); //поков на странице
 
   React.useEffect(() => {
     if (isMounted.current) {
@@ -57,6 +57,23 @@ function ResponsiveDrawer(props) {
     }
   }, [dispatch]);
 
+  React.useEffect(()=>{
+    showCategory('all')
+  },[categories])
+
+  React.useEffect(() => {
+    if (page > 0 && filteredGlobal.current) {
+      const pokesPerPage = [
+        page * pokesPage.current - pokesPage.current,
+        page * pokesPage.current,
+      ];
+
+      let filtered = filteredGlobal.current;
+      pageSplitter(filtered, pokesPerPage);
+    }
+    
+  }, [page]);
+
   if (pokesData.length >= limitReq) {
     dispatch(filterCategories());
   }
@@ -71,21 +88,15 @@ function ResponsiveDrawer(props) {
     setCatPokes(shorted);
   };
 
-  const b = new Promise(function (resolve, reject) {
-    
-      resolve(()=>setPage(1));
-   
-  });
-  
   const showCategory = (text) => {
-    const pokesPerPage = [page * 10 - 10, page * 10];
+    const pokesPerPage = [
+      page * pokesPage.current - pokesPage.current,
+      page * pokesPage.current,
+    ];
+
     if (text === "all") {
       filteredGlobal.current = pokesData;
-      b.then(function () {
-        
-        pageSplitter(pokesData, pokesPerPage);
-      });
-
+      pageSplitter(pokesData, pokesPerPage);
     } else {
       let filtered = [];
       pokesData.forEach((item) => {
@@ -99,21 +110,23 @@ function ResponsiveDrawer(props) {
 
       pageSplitter(filtered, pokesPerPage);
     }
+
+    setPage(1);
   };
 
   const paginHandler = (e, value) => {
-    console.log(value);
     setPage(value);
-    const pokesPerPage = [value * 10 - 10, value * 10];
-
-    let filtered = filteredGlobal.current;
-    pageSplitter(filtered, pokesPerPage);
   };
 
-  const pokeShow = (pokemon,searchFrom) => {
-    setShow([true,searchFrom/* из поиска, для картинки*/]);
-    setPokemon(pokemon);
+  const pokeShow = (pokemon, searchFrom,) => {
+    setShow([true, searchFrom /* из поиска, для картинки*/]);
+    pokemon && setPokemon(pokemon);
   };
+
+  const closeModal = () =>{
+    setShow([false,false])
+    setClear(true)
+  }
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -124,7 +137,14 @@ function ResponsiveDrawer(props) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      {show[0] && <PokeCard pokemonUrl={pokemon} newPictureReqProof={show} close={setShow} />}
+      {show[0] && (
+        <PokeCard
+          pokemonUrl={pokemon}
+          newPictureReqProof={show}
+          close={closeModal}
+          
+        />
+      )}
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -151,7 +171,7 @@ function ResponsiveDrawer(props) {
           >
             PokemonApp
           </Typography>
-          <DebouncedSearch show={pokeShow}  />
+          <DebouncedSearch show={pokeShow} clear={clear}/>
         </Toolbar>
       </AppBar>
       <Box
@@ -205,7 +225,7 @@ function ResponsiveDrawer(props) {
             {catPokes.map((poke, index) => {
               return (
                 <Grid item key={index} xs={12} sm={6} md={3} lg={2}>
-                  <MediaCard learnMore={pokeShow}  {...poke} />
+                  <MediaCard learnMore={pokeShow} {...poke} />
                 </Grid>
               );
             })}
@@ -226,7 +246,9 @@ function ResponsiveDrawer(props) {
         elevation={3}
       >
         <Pagination
-          count={10}
+          defaultPage={1}
+          count={(filteredGlobal.current && Math.ceil(filteredGlobal.current.length / pokesPage.current)) || 1}
+          
           color="secondary"
           size="large"
           page={page}
