@@ -17,7 +17,11 @@ export default function MediaCard({ name, sprites, learnMore, pokemon, }) {
       setPoke((poke) => res);
     };
     fetchData().catch(console.error);
+   
   }, [poke]);
+
+  
+
 
   return (
     <Card sx={{ maxWidth: 345, m: "0 auto" }}>

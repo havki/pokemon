@@ -3,7 +3,15 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { CardContent, CardMedia } from "@mui/material";
+import {
+  CardContent,
+  CardMedia,
+  FormControlLabel,
+  FormGroup,
+  Rating,
+  Stack,
+  Switch,
+} from "@mui/material";
 import axios from "../../api/axios.info";
 import Loading from "../../UI/Loading";
 
@@ -20,8 +28,17 @@ const style = {
   zIndex: 9999,
 };
 
+const labels = {
+  1: "basic",
+  2: "advanced",
+  3: "strength",
+  4: "legendary",
+  5: "myth",
+};
+
 function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
   const [pokeInfo, setPokeInfo] = React.useState(null);
+  const [checked, setChecked] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +54,13 @@ function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
     fetchData().catch(console.error);
   }, []);
 
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
   if (!pokeInfo) {
     return <Loading />;
   }
-
 
   return (
     <div>
@@ -50,9 +70,27 @@ function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography gutterBottom variant="h3" component="div">
-            {pokemonUrl.name}
-          </Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography gutterBottom variant="h4" component="div">
+              {pokemonUrl.name}
+            </Typography>
+            <Stack direction='column'>
+
+            <Rating
+              name="read-only"
+              value={pokeInfo.base_experience / 50}
+              readOnly
+              size="large"
+            />
+            <Typography  variant="h6" align="right" component="div">
+              {labels[Math.round(pokeInfo.base_experience / 50)]}
+            </Typography>
+            </Stack>
+          </Stack>
           <CardMedia
             component="img"
             height="300"
@@ -64,14 +102,44 @@ function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
             alt="green iguana"
           />
           <CardContent></CardContent>
-
-          {pokeInfo.types.map((item) => {
-            return (
-              <Typography gutterBottom variant="h5" component="div">
-                Force {item.slot} : {item.type.name}
-              </Typography>
-            );
-          })}
+          <FormGroup sx={{ marginLeft: "50%" }}>
+            <FormControlLabel
+              labelPlacement="top"
+              control={
+                <Switch
+                  checked={checked}
+                  onChange={handleChange}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label="Hidden"
+            />
+          </FormGroup>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Stack direction="column">
+              {pokeInfo.types.map((item) => {
+                return (
+                  <Typography gutterBottom variant="h6" component="div">
+                    Force {item.slot} : {item.type.name}
+                  </Typography>
+                );
+              })}
+            </Stack>
+            <Stack direction="column" justifyContent="flex-end">
+              {checked &&
+                pokeInfo.abilities.map((item, index) => {
+                  return (
+                    <Typography gutterBottom variant="h6" component="div">
+                      {index + 1}: {item.ability.name}
+                    </Typography>
+                  );
+                })}
+            </Stack>
+          </Stack>
 
           <Button size="small" onClick={() => close()}>
             OK
@@ -83,3 +151,19 @@ function PokeCard({ close, pokemonUrl, newPictureReqProof = [false, false] }) {
 }
 
 export default PokeCard;
+
+{
+  /* <FormGroup>
+                <FormControlLabel
+                labelPlacement='top'
+                  control={
+                    <Switch
+                      checked={checked}
+                      onChange={handleChange}
+                      inputProps={{ "aria-label": "controlled" }}
+                    />
+                  }
+                  label="Hidden"
+                />
+              </FormGroup> */
+}

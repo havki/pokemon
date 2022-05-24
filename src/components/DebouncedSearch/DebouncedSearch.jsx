@@ -11,7 +11,7 @@ const getOptionsAsync = (query) => {
       resolve(
         pokesArr.results.filter((o) => o.name.indexOf(query.toLowerCase()) > -1)
       );
-    }, 2000);
+    }, 1000);
   });
 };
 
@@ -27,11 +27,11 @@ function DebouncedSearch({ show, clear = false }) {
     }, 200),
     []
   );
-  console.log(clear);
+  
   useEffect(() => {
     setOptions([]);
     setInputValue("");
-    console.log("cleared");
+  
 
     return () => {};
   }, [clear]);
